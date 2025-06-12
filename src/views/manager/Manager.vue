@@ -32,6 +32,6 @@ import Home from '@/components/Home.vue'
 .main-content {
     width: 100vw;
     height: 100vh;
-    margin-left: 200px;
+    margin-left: 100px;
 }
 </style>

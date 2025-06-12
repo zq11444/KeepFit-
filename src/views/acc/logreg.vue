@@ -7,7 +7,10 @@
                 <input type="text" placeholder="用户名" v-model="registerData.username">
                 <input type="password" placeholder="密码" v-model="registerData.password">
                 <input type="password" placeholder="确认密码" v-model="registerData.confirmPassword">
-                <button @click="handleRegister">注册</button>
+                <p class="error-message" v-if="registerError">{{ registerError }}</p>
+                <button @click="handleRegister" :disabled="isRegistering">
+                    {{ isRegistering ? '注册中...' : '注册' }}
+                </button>
             </div>
 
             <!-- Login Form -->
@@ -40,7 +43,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import logo from '@/assets/健身.png';
 import logo2 from '@/assets/水果.png';
-
+import axios from 'axios';
 const router = useRouter();
 
 const showRegister = ref(false);
@@ -57,6 +60,9 @@ const loginData = ref({
     password: ''
 });
 
+const isRegistering = ref(false);
+const registerError = ref('');
+
 const showRegisterForm = () => {
     formTransform.value = 'translateX(80%)';
     showRegister.value = true;
@@ -67,13 +73,107 @@ const showLogin = () => {
     showRegister.value = false;
 };
 
-const handleRegister = () => {
-    console.log('Register data:', registerData.value);
+const handleRegister = async () => {
+  // 验证输入
+  if (!registerData.value.username || !registerData.value.password) {
+    registerError.value = '请输入用户名和密码';
+    return;
+  }
+  
+  if (registerData.value.password !== registerData.value.confirmPassword) {
+    registerError.value = '两次输入的密码不一致';
+    return;
+  }
+
+  isRegistering.value = true;
+  registerError.value = '';
+
+  try {
+    const requestData = {
+      userName: registerData.value.username,
+      passWord: registerData.value.password,
+      confirmPassword: registerData.value.confirmPassword
+    };
+
+    const response = await axios.post('/api/auth/register', requestData);
+    console.log('注册响应:', response.data);
+
+    // 修改这里的判断逻辑
+    if (response.status === 201) {
+      // 清空注册表单
+      registerData.value.username = '';
+      registerData.value.password = '';
+      registerData.value.confirmPassword = '';
+      
+      // 显示成功消息
+      alert('注册成功！');
+      
+      // 确保调用切换到登录页面
+      showLogin();
+    } else {
+      registerError.value = response.data?.message || '注册失败';
+    }
+  } catch (error) {
+    console.error('Register error:', error);
+    registerError.value = error.response?.data?.message || '注册失败，请稍后重试';
+  } finally {
+    isRegistering.value = false;
+  }
 };
 
-const handleLogin = () => {
-    console.log('Login data:', loginData.value);
-    router.push('/manager/Manager');
+// 添加请求配置
+axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+
+const handleLogin = async () => {
+    if (!loginData.value.username || !loginData.value.password) {
+        alert('请输入用户名和密码');
+        return;
+    }
+
+    try {
+        // 构造请求数据
+        const requestData = {
+            userName: loginData.value.username,
+            passWord: loginData.value.password
+        };
+
+        console.log('发送登录请求:', requestData);
+
+        const response = await axios.post('/api/auth/adminlogin', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('登录响应:', response.data);
+
+        if (response.data) {
+            // 保存token
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+            }
+            alert('登录成功');
+            router.push('/manager/Manager');
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        let errorMessage = '登录失败';
+        
+        if (error.response) {
+            // 服务器返回错误响应
+            errorMessage = error.response.data?.message || `登录失败(${error.response.status})`;
+            console.log('错误响应:', error.response.data);
+        } else if (error.request) {
+            // 请求发送失败
+            errorMessage = '网络连接失败，请检查服务器状态';
+        } else {
+            // 请求配置错误
+            errorMessage = error.message;
+        }
+        
+        alert(errorMessage);
+    }
 };
 </script>
 
@@ -269,5 +369,19 @@ input:focus::placeholder {
     background-color: #6252dd;
     color: #fff;
     transform: translateY(-2px);
+}
+
+.error-message {
+    color: #ff4747;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+    width: 70%;
+}
+
+.form-box button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
 }
 </style>

@@ -2,7 +2,6 @@
     <div class="manager-container">
         <sidebar class="sidebar" />
         <div class="main-content">
-            <h2>课程管理</h2>
             <classM />
         </div>
     </div>
@@ -16,8 +15,8 @@ import classM from '@/components/classM.vue'
 <style scoped>
 .manager-container {
     display: flex;
-    width: 100%;
     min-height: 100vh;
+    width: 100%;
 }
 
 .sidebar {
@@ -26,5 +25,18 @@ import classM from '@/components/classM.vue'
     top: 0;
     height: 100vh;
     z-index: 1000;
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 84px;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: calc(100% - 84px);
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-left: 84px;
 }
 </style>

@@ -73,7 +73,9 @@ const resetFilter = () => {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    margin-right: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 :deep(.el-table) {

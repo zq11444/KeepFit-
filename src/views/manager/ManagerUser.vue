@@ -2,7 +2,6 @@
     <div class="manager-container">
         <sidebar class="sidebar" />
         <div class="main-content">
-            <h2>用户管理</h2>
             <userM />
         </div>
     </div>
@@ -15,6 +14,7 @@ import userM from '@/components/userM.vue'
 .manager-container {
     display: flex;
     min-height: 100vh;
+    width: 100%;
 }
 
 .sidebar {
@@ -28,7 +28,13 @@ import userM from '@/components/userM.vue'
 .main-content {
     flex: 1;
     margin-left: 84px;
-    padding: 20px 30px;
-    overflow-x: hidden;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: calc(100% - 84px);
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-left: 84px;
 }
 </style>
