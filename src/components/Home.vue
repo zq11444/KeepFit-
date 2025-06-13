@@ -26,15 +26,33 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { User, Trophy, Calendar, Coin } from '@element-plus/icons-vue'
+import axios from 'axios'
 
 const currentTime = ref('')
+const userCount = ref('0')
 
-const statsData = [
-    { label: '总用户数', value: '2,380', icon: 'User', color: 'linear-gradient(135deg, #6252dd, #9747FF)' },
-    { label: '教练数量', value: '68', icon: 'Trophy', color: 'linear-gradient(135deg, #FF6B6B, #FFB4B4)' },
-    { label: '课程数量', value: '128', icon: 'Calendar', color: 'linear-gradient(135deg, #4ECDC4, #7EE8DF)' },
+const statsData = ref([
+    { label: '总用户数', value: '0', icon: 'User', color: 'linear-gradient(135deg, #6252dd, #9747FF)' },
+    { label: '教练数量', value: '0', icon: 'Trophy', color: 'linear-gradient(135deg, #FF6B6B, #FFB4B4)' },
+    { label: '课程数量', value: '0', icon: 'Calendar', color: 'linear-gradient(135deg, #4ECDC4, #7EE8DF)' },
     { label: '本月收入', value: '￥25,688', icon: 'Coin', color: 'linear-gradient(135deg, #FFB86C, #FFD93D)' }
-]
+])
+
+const fetchUserCount = async () => {
+    try {
+        const response = await axios.get('http://localhost:5000/api/status/total_counts')
+        if (response.data.code === 200 && response.data.message === "Success") {
+            statsData.value[0].value = response.data.data.total_users.toString()
+            statsData.value[1].value = response.data.data.total_coaches.toString()
+            statsData.value[2].value = response.data.data.total_coach_courses.toString()
+        }
+    } catch (error) {
+        console.error('获取用户数量失败:', error)
+        statsData.value[0].value = '0'
+        statsData.value[1].value = '0'
+        statsData.value[2].value = '0'
+    }
+}
 
 const updateTime = () => {
     const now = new Date()
@@ -50,6 +68,7 @@ const updateTime = () => {
 onMounted(() => {
     updateTime()
     setInterval(updateTime, 60000)
+    fetchUserCount() // 获取用户数量
 })
 </script>
 

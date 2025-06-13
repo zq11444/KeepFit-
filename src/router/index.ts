@@ -22,9 +22,9 @@ const routes = [
         component: () => import("@/views/manager/ManagerCoach.vue"),
       },
       {
-        path: "ManagerClass",
-        name: "ManagerClass",
-        component: () => import("@/views/manager/ManagerClass.vue"),
+        path: "ManagerViedeo",
+        name: "ManagerViedeo",
+        component: () => import("@/views/manager/ManagerVideo.vue"),
       },
     ],
   },

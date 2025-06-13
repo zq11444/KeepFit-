@@ -44,10 +44,10 @@ import { useRouter } from 'vue-router';
 import logo from '@/assets/健身.png';
 import logo2 from '@/assets/水果.png';
 import axios from 'axios';
+import { alert } from '@/utils/alert';
 const router = useRouter();
 
-const showRegister = ref(false);
-const formTransform = ref('translateX(0%)');
+
 
 const registerData = ref({
     username: '',
@@ -60,6 +60,8 @@ const loginData = ref({
     password: ''
 });
 
+const showRegister = ref(false);
+const formTransform = ref('translateX(0%)');
 const isRegistering = ref(false);
 const registerError = ref('');
 
@@ -105,8 +107,7 @@ const handleRegister = async () => {
       registerData.value.password = '';
       registerData.value.confirmPassword = '';
       
-      // 显示成功消息
-      alert('注册成功！');
+      alert.success('注册成功！');  // 替换 alert
       
       // 确保调用切换到登录页面
       showLogin();
@@ -127,7 +128,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const handleLogin = async () => {
     if (!loginData.value.username || !loginData.value.password) {
-        alert('请输入用户名和密码');
+        alert.warning('请输入用户名和密码');  // 替换 alert
         return;
     }
 
@@ -153,7 +154,7 @@ const handleLogin = async () => {
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
             }
-            alert('登录成功');
+            alert.success('登录成功');  // 替换 alert
             router.push('/manager/Manager');
         }
     } catch (error) {
@@ -172,7 +173,7 @@ const handleLogin = async () => {
             errorMessage = error.message;
         }
         
-        alert(errorMessage);
+        alert.error(errorMessage);  // 替换 alert
     }
 };
 </script>

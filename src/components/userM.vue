@@ -1,40 +1,61 @@
 <template>
     <div class="table-container">
         <div class="filter-container">
-            <el-input v-model="filterData.keyword" placeholder="输入关键词搜索" class="filter-item" />
+            <el-input v-model="filterData.keyword" placeholder="输入id或者用户名搜索" class="filter-item" />
             <el-button type="primary" @click="handleFilter">搜索</el-button>
             <el-button @click="resetFilter">重置</el-button>
         </div>
         <el-table :data="filteredTableData" style="width: 100%">
-            <el-table-column prop="id" label="用户ID" align="center" width="240" />
-            <el-table-column prop="name" label="用户名" align="center" width="240" />
-            <el-table-column label="操作" align="center" width="240">
+            <el-table-column prop="uid" label="用户ID" align="center" width="160" />
+            <el-table-column prop="userName" label="用户名" align="center" width="160" />
+            <el-table-column label="操作" align="center" width="160">
                 <template #default="scope">
                     <el-button type="primary" @click="handleEdit(scope.row)" size="small">
                         编辑
                     </el-button>
-                    <el-button type="danger" @click="handleDelete(scope.row)" size="small">
+                    <el-button type="danger" @click="confirmDelete(scope.row)" size="small">
                         删除
                     </el-button>
                 </template>
             </el-table-column>
         </el-table>
+
+        <!-- 删除确认对话框 -->
+        <el-dialog
+            v-model="deleteDialogVisible"
+            title="确认删除"
+            width="30%"
+        >
+            <span>确定要删除该用户吗？此操作不可恢复。</span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="deleteDialogVisible = false">取消</el-button>
+                    <el-button type="danger" @click="handleDeleteConfirm" :loading="deleting">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        <!-- 编辑用户信息对话框 -->
+        <UserEditDialog 
+            v-model="editDialogVisible"
+            :user="currentUser"
+            @update="handleEditSubmit"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import UserEditDialog from './dialogs/UserEditDialog.vue'
 
 interface User {
-    id: number
-    name: string
+    uid: number
+    userName: string
 }
 
-const tableData = ref<User[]>([
-    { id: 1, name: '张三' },
-    { id: 2, name: '李四' },
-    { id: 3, name: '王五' },
-])
+const tableData = ref<User[]>([])
 
 const filterData = ref({
     keyword: ''
@@ -45,13 +66,46 @@ const filteredTableData = computed(() => {
     if (!keyword) return tableData.value
 
     return tableData.value.filter(item =>
-        item.name.toLowerCase().includes(keyword) ||
-        item.id.toString().includes(keyword)
+        item.userName.toLowerCase().includes(keyword) ||
+        item.uid.toString().includes(keyword)
     )
 })
 
+const editDialogVisible = ref(false)
+
 const handleEdit = (row: User) => {
-    console.log('编辑用户:', row)
+    currentUser.value = { ...row }
+    editDialogVisible.value = true
+}
+
+const deleteDialogVisible = ref(false)
+const deleting = ref(false)
+const currentUser = ref<User | null>(null)
+
+const confirmDelete = (user: User) => {
+    currentUser.value = user
+    deleteDialogVisible.value = true
+}
+
+const handleDeleteConfirm = async () => {
+    if (!currentUser.value) return
+
+    deleting.value = true
+    try {
+        const response = await axios.delete(`http://localhost:5000/api/manager/user_data/${currentUser.value.uid}`)
+        if (response.status === 200) {
+            ElMessage.success('删除成功')
+            // 从表格数据中移除该用户
+            tableData.value = tableData.value.filter(user => user.uid !== currentUser.value?.uid)
+            deleteDialogVisible.value = false
+        }
+    } catch (error) {
+        console.error('删除用户失败:', error)
+        ElMessage.error('删除失败，请重试')
+    } finally {
+        deleting.value = false
+        currentUser.value = null
+    }
 }
 
 const handleDelete = (row: User) => {
@@ -65,6 +119,24 @@ const handleFilter = () => {
 const resetFilter = () => {
     filterData.value.keyword = ''
 }
+
+// 添加获取用户数据的函数
+const fetchUserData = async () => {
+    try {
+        const response = await axios.get('http://localhost:5000/api/manager/user_data')
+        if (response.status === 200) {
+            tableData.value = response.data
+            console.log('获取到的用户数据:', response.data)
+        }
+    } catch (error) {
+        console.error('获取用户数据失败:', error)
+    }
+}
+
+// 在组件挂载时获取数据
+onMounted(() => {
+    fetchUserData()
+})
 </script>
 
 <style scoped>

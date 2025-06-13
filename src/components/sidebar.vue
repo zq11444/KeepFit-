@@ -63,7 +63,7 @@ const navItems = [
     {
         text: '课程管理',
         id: 'courses',
-        path: '/manager/ManagerClass',
+        path: '/manager/ManagerViedeo',
         selectable: true
     }
 ]

@@ -2,14 +2,14 @@
     <div class="manager-container">
         <sidebar class="sidebar" />
         <div class="main-content">
-            <classM />
+            <videoM />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import sidebar from '@/components/sidebar.vue'
-import classM from '@/components/videoM.vue'
+import videoM from '@/components/videoM.vue'
 </script>
 
 <style scoped>
@@ -17,7 +17,6 @@ import classM from '@/components/videoM.vue'
     display: flex;
     min-height: 100vh;
     width: 100%;
-    overflow: hidden;
 }
 
 .sidebar {
@@ -39,6 +38,5 @@ import classM from '@/components/videoM.vue'
     max-width: 1200px;
     margin: 0 auto;
     margin-left: 84px;
-    overflow: hidden;  // 添加这行
 }
 </style>
