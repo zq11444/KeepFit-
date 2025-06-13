@@ -5,10 +5,10 @@
             <el-button type="primary" @click="handleFilter">搜索</el-button>
             <el-button @click="resetFilter">重置</el-button>
         </div>
-        <el-table :data="filteredTableData" style="width: 100%">
-            <el-table-column prop="uid" label="用户ID" align="center" width="160" />
-            <el-table-column prop="userName" label="用户名" align="center" width="160" />
-            <el-table-column label="操作" align="center" width="160">
+        <el-table :data="paginatedData" style="width: 100%">
+            <el-table-column prop="uid" label="用户ID" align="center" width="200" />
+            <el-table-column prop="userName" label="用户名" align="center" width="300" />
+            <el-table-column label="操作" align="center" width="300">
                 <template #default="scope">
                     <el-button type="primary" @click="handleEdit(scope.row)" size="small">
                         编辑
@@ -19,6 +19,20 @@
                 </template>
             </el-table-column>
         </el-table>
+
+        <!-- 添加分页器 -->
+        <div class="pagination-container">
+            <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="pageSize"
+                :page-sizes="[15, 30, 50, 100]"
+                :total="filteredTableData.length"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                layout="total, sizes, prev, pager, next, jumper"
+                background
+            />
+        </div>
 
         <!-- 删除确认对话框 -->
         <el-dialog
@@ -137,6 +151,27 @@ const fetchUserData = async () => {
 onMounted(() => {
     fetchUserData()
 })
+
+// 添加分页相关的响应式数据
+const currentPage = ref(1)
+const pageSize = ref(15)
+
+// 计算分页后的数据
+const paginatedData = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value
+    const end = start + pageSize.value
+    return filteredTableData.value.slice(start, end)
+})
+
+// 分页处理方法
+const handleSizeChange = (val: number) => {
+    pageSize.value = val
+    currentPage.value = 1
+}
+
+const handleCurrentChange = (val: number) => {
+    currentPage.value = val
+}
 </script>
 
 <style scoped>
@@ -186,5 +221,19 @@ onMounted(() => {
 
 .filter-item {
     width: 200px;
+}
+
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+    background-color: #6252dd;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) {
+    color: #6252dd;
 }
 </style>

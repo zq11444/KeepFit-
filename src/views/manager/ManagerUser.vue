@@ -32,7 +32,7 @@ import userM from '@/components/userM.vue'
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    width: calc(100% - 84px);
+    width: 800px;
     max-width: 1200px;
     margin: 0 auto;
     margin-left: 84px;
