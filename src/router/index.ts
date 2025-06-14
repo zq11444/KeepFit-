@@ -7,7 +7,7 @@ const routes = [
     path: "/manager",
     children: [
       {
-        path: "Manager", // 注意这里去掉了前面的/manager
+        path: "Manager", 
         name: "Manager",
         component: () => import("@/views/manager/Manager.vue"),
       },

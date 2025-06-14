@@ -6,9 +6,9 @@
             <el-button @click="resetFilter">重置</el-button>
         </div>
         <el-table :data="paginatedData" style="width: 100%">
-            <el-table-column prop="uid" label="用户ID" align="center" width="200" />
-            <el-table-column prop="userName" label="用户名" align="center" width="300" />
-            <el-table-column label="操作" align="center" width="300">
+            <el-table-column prop="uid" label="用户ID" align="center" width="225" />
+            <el-table-column prop="userName" label="用户名" align="center" width="225" />
+            <el-table-column label="操作" align="center" width="225">
                 <template #default="scope">
                     <el-button type="primary" @click="handleEdit(scope.row)" size="small">
                         编辑
@@ -63,6 +63,7 @@ import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import UserEditDialog from './dialogs/UserEditDialog.vue'
+import { alert } from '@/utils/alert'
 
 interface User {
     uid: number
@@ -108,14 +109,13 @@ const handleDeleteConfirm = async () => {
     try {
         const response = await axios.delete(`http://localhost:5000/api/manager/user_data/${currentUser.value.uid}`)
         if (response.status === 200) {
-            ElMessage.success('删除成功')
-            // 从表格数据中移除该用户
+            alert.success('删除成功')
             tableData.value = tableData.value.filter(user => user.uid !== currentUser.value?.uid)
             deleteDialogVisible.value = false
         }
     } catch (error) {
         console.error('删除用户失败:', error)
-        ElMessage.error('删除失败，请重试')
+        alert.error('删除失败，请重试')
     } finally {
         deleting.value = false
         currentUser.value = null
@@ -127,7 +127,7 @@ const handleDelete = (row: User) => {
 }
 
 const handleFilter = () => {
-    // 不需要额外处理，computed会自动更新
+    
 }
 
 const resetFilter = () => {
@@ -172,6 +172,15 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = (val: number) => {
     currentPage.value = val
 }
+
+const handleEditSubmit = (updatedUser: User) => {
+    // 查找并更新本地数据
+    const index = tableData.value.findIndex(user => user.uid === updatedUser.uid)
+    if (index !== -1) {
+        tableData.value[index] = updatedUser;
+    }
+    editDialogVisible.value = false;
+}
 </script>
 
 <style scoped>
@@ -183,10 +192,12 @@ const handleCurrentChange = (val: number) => {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    overflow-x: hidden;  /* 添加这行 */
 }
 
 :deep(.el-table) {
     width: 100% !important;
+    overflow-x: hidden !important;  /* 添加这行 */
 }
 
 :deep(.el-button--primary) {
@@ -229,11 +240,13 @@ const handleCurrentChange = (val: number) => {
     justify-content: center;
 }
 
-:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-    background-color: #6252dd;
-}
 
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) {
-    color: #6252dd;
+    background-color: #6252dd;
+    color: white;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+    background-color: #6252dd;
 }
 </style>

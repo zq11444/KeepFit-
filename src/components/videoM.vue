@@ -31,7 +31,6 @@
             </el-table-column>
         </el-table>
 
-        <!-- 添加分页器 -->
         <div class="pagination-container">
             <el-pagination
                 v-model:current-page="currentPage"
@@ -159,11 +158,8 @@ const handleDeleteConfirm = async () => {
     try {
         const response = await axios.delete(`http://localhost:5000/api/manager/coachvideo/${currentVideo.value.videoid}`)
         if (response.status === 200) {
-            // 先更新本地数据
             tableData.value = tableData.value.filter(video => video.videoid !== currentVideo.value?.videoid)
-            // 关闭对话框
             deleteDialogVisible.value = false
-            // 使用延时确保弹窗关闭后再显示成功提示
             setTimeout(() => {
                 alert.success('删除视频成功')
             }, 100)
@@ -182,7 +178,6 @@ const handleDelete = (row: Video) => {
 }
 
 const handleFilter = () => {
-    // computed会自动更新
 }
 
 const resetFilter = () => {
@@ -199,13 +194,10 @@ const handleCreate = () => {
 
 const handleCreated = async (newVideo: Video) => {
     try {
-        // 先获取最新数据
         const response = await axios.get('http://localhost:5000/api/videos/')
         if (response.status === 200) {
             tableData.value = response.data
-            // 先关闭弹窗
             createDialogVisible.value = false
-            // 最后再显示成功提示
             setTimeout(() => {
                 alert.success('添加视频成功')
             }, 100)
@@ -222,7 +214,6 @@ const currentVideo = ref<Video | null>(null)
 
 const handleEditSubmit = async (updatedVideo: Video) => {
     try {
-        // 刷新列表数据
         await fetchData()
         editDialogVisible.value = false
         alert.success('更新成功')
@@ -312,11 +303,13 @@ onMounted(() => {
     justify-content: center;
 }
 
-:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-    background-color: #6252dd;
-}
 
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) {
-    color: #6252dd;
+    background-color: #6252dd;
+    color: white;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+    background-color: #6252dd;
 }
 </style>

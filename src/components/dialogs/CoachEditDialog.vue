@@ -116,13 +116,13 @@ const handleConfirm = async () => {
                 })
                 
                 if (response.status === 200) {
-                    alert.success('教练信息更新成功')  // 修改这行
+                    alert.success('教练信息更新成功')
                     emit('update', form.value)
                     dialogVisible.value = false
                 }
             } catch (error) {
                 console.error('更新教练信息失败:', error)
-                alert.error(error.response?.data?.message || '更新失败，请重试')  // 修改这行
+                alert.error(error.response?.data?.message || '更新失败，请重试')
             } finally {
                 loading.value = false
             }

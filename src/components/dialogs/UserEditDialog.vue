@@ -85,15 +85,21 @@ const handleConfirm = async () => {
                 });
                 
                 if (response.status === 200) {
+                    // 更新数据
                     emit('update', {
                         uid: form.value.uid,
                         userName: form.value.userName
                     });
+                    // 先关闭对话框
                     dialogVisible.value = false;
+                    // 显示成功提示
+                    setTimeout(() => {
+                        alert.success('用户信息更新成功');
+                    }, 100);
                 }
             } catch (error) {
                 console.error('更新用户失败:', error);
-                alert.error(error.response?.data?.message || '更新失败，请重试'); // 修改这行
+                alert.error(error.response?.data?.message || '更新失败，请重试');
             } finally {
                 loading.value = false;
             }

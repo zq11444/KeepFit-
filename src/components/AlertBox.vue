@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { Close, SuccessFilled, WarningFilled, CircleCloseFilled, InfoFilled } from '@element-plus/icons-vue'
+import { ElIcon } from 'element-plus'
 
 const props = defineProps({
     message: {

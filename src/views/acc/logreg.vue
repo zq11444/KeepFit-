@@ -46,9 +46,6 @@ import logo2 from '@/assets/水果.png';
 import axios from 'axios';
 import { alert } from '@/utils/alert';
 const router = useRouter();
-
-
-
 const registerData = ref({
     username: '',
     password: '',
@@ -76,7 +73,6 @@ const showLogin = () => {
 };
 
 const handleRegister = async () => {
-  // 验证输入
   if (!registerData.value.username || !registerData.value.password) {
     registerError.value = '请输入用户名和密码';
     return;
@@ -100,16 +96,11 @@ const handleRegister = async () => {
     const response = await axios.post('/api/auth/register', requestData);
     console.log('注册响应:', response.data);
 
-    // 修改这里的判断逻辑
-    if (response.status === 201) {
-      // 清空注册表单
+    if (response.status === 200) {
       registerData.value.username = '';
       registerData.value.password = '';
       registerData.value.confirmPassword = '';
-      
-      alert.success('注册成功！');  // 替换 alert
-      
-      // 确保调用切换到登录页面
+      alert.success('注册成功！');
       showLogin();
     } else {
       registerError.value = response.data?.message || '注册失败';
@@ -122,18 +113,11 @@ const handleRegister = async () => {
   }
 };
 
-// 添加请求配置
 axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const handleLogin = async () => {
-    if (!loginData.value.username || !loginData.value.password) {
-        alert.warning('请输入用户名和密码');  // 替换 alert
-        return;
-    }
-
     try {
-        // 构造请求数据
         const requestData = {
             userName: loginData.value.username,
             passWord: loginData.value.password
@@ -150,11 +134,8 @@ const handleLogin = async () => {
         console.log('登录响应:', response.data);
 
         if (response.data) {
-            // 保存token
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-            }
-            alert.success('登录成功');  // 替换 alert
+            localStorage.setItem('userName', response.data.user.userName);
+            alert.success('登录成功');
             router.push('/manager/Manager');
         }
     } catch (error) {
@@ -162,18 +143,15 @@ const handleLogin = async () => {
         let errorMessage = '登录失败';
         
         if (error.response) {
-            // 服务器返回错误响应
             errorMessage = error.response.data?.message || `登录失败(${error.response.status})`;
             console.log('错误响应:', error.response.data);
         } else if (error.request) {
-            // 请求发送失败
             errorMessage = '网络连接失败，请检查服务器状态';
         } else {
-            // 请求配置错误
             errorMessage = error.message;
         }
         
-        alert.error(errorMessage);  // 替换 alert
+        alert.error(errorMessage);
     }
 };
 </script>

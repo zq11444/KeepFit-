@@ -1,7 +1,7 @@
 <template>
     <div class="home-container">
         <div class="welcome-section">
-            <h2>欢迎回来，管理员</h2>
+            <h2>欢迎回来，{{ userName }}管理员</h2>
             <p>{{ currentTime }}</p>
         </div>
 
@@ -26,10 +26,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { User, Trophy, Calendar, Coin } from '@element-plus/icons-vue'
+import { ElCard, ElIcon } from 'element-plus'
 import axios from 'axios'
 
 const currentTime = ref('')
-const userCount = ref('0')
+const userName = ref('')
 
 const statsData = ref([
     { label: '总用户数', value: '0', icon: 'User', color: 'linear-gradient(135deg, #6252dd, #9747FF)' },
@@ -65,10 +66,15 @@ const updateTime = () => {
     })
 }
 
+const fetchUserName = () => {
+    userName.value = localStorage.getItem('userName')
+}
+
 onMounted(() => {
     updateTime()
     setInterval(updateTime, 60000)
-    fetchUserCount() // 获取用户数量
+    fetchUserCount()
+    fetchUserName()
 })
 </script>
 

@@ -273,11 +273,13 @@ onMounted(() => {
     justify-content: center;
 }
 
-:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-    background-color: #6252dd;
-}
 
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled):hover) {
-    color: #6252dd;
+    background-color: #6252dd;
+    color: white;
+}
+
+:deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+    background-color: #6252dd;
 }
 </style>
