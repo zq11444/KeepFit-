@@ -7,17 +7,6 @@ import Manager from './views/manager/Manager.vue';
 </template>
 
 <style>
-/* #app {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-/* 覆盖可能的媒体查询 */
 @media (min-width: 1024px) {
   #app {
     display: flex !important;
